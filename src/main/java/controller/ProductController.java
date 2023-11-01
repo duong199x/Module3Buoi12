@@ -55,6 +55,7 @@ public class ProductController extends HttpServlet {
 
     public void showFormEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
+        request.setAttribute("id",id);
         Product product = productIService.findProductById(id);
         request.setAttribute("editProduct", product);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/products/edit.jsp");
@@ -81,12 +82,11 @@ public class ProductController extends HttpServlet {
     }
 
     public void addProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
         String name = request.getParameter("name");
         double price = Double.parseDouble(request.getParameter("price"));
         String image = request.getParameter("image");
         int quantity = Integer.parseInt(request.getParameter("quantity"));
-        Product product = new Product(id, name, quantity, price, image);
+        Product product = new Product(name, quantity, price, image);
         productIService.add(product);
         response.sendRedirect("/products?action=home");
     }

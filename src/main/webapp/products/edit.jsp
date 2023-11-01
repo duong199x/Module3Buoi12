@@ -9,14 +9,21 @@
 <html>
 <head>
     <title>Edit</title>
+    <style>
+        img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
 </head>
 <body>
-<form action="" method="post">
+<form action="http://localhost:8080/products?action=edit&id=${id}" method="post">
     <input type="text" name="id" placeholder="${editProduct.id}" disabled>
     <input type="text" name="name" value="${editProduct.name}">
     <input type="text" name="quantity" value="${editProduct.quantity}">
     <input type="text" name="price" value="${editProduct.price}">
     <input type="text" name="image" value="${editProduct.image}">
+    <img src="${editProduct.image}">
     <button>Submit</button>
 </form>
 </body>

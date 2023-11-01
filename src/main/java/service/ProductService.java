@@ -2,22 +2,58 @@ package service;
 
 import model.Product;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductService implements IService<Product> {
+    private Connection connection = ConnectionToMySql.getConnection();
+
     @Override
     public boolean add(Product product) {
-        return false;
+        String sql = "insert into product(name, price, quantity, image) values (?,?,?,?);";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, product.getName());
+            statement.setDouble(2, product.getPrice());
+            statement.setInt(3, product.getQuantity());
+            statement.setString(4, product.getImage());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
     public boolean edit(Product product, int id) {
+        String sql = "update product set name =?, price=?, quantity=?, image=? where id =?;";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, product.getName());
+            statement.setDouble(2, product.getPrice());
+            statement.setInt(3, product.getQuantity());
+            statement.setString(4, product.getImage());
+            statement.setInt(5, id);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean delete(int id) {
+        String sql = "delete from product where id = ?;";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
@@ -28,11 +64,46 @@ public class ProductService implements IService<Product> {
 
     @Override
     public List<Product> findAll() {
-        return null;
+        List<Product> productList = new ArrayList<>();
+        String sql = "select * from product;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                double price = resultSet.getDouble("price");
+                int quantity = resultSet.getInt("quantity");
+                String image = resultSet.getString("image");
+                Product product = new Product(id, name, quantity, price, image);
+                productList.add(product);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return productList;
     }
 
     @Override
     public Product findProductById(int id) {
+        String sql = "select * from product where id = ?;";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                double price = resultSet.getDouble("price");
+                int quantity = resultSet.getInt("quantity");
+                String image = resultSet.getString("image");
+                Product product = new Product(id, name, quantity, price, image);
+                return product;
+            }
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 //    private List<Product> productList = new ArrayList<>();
